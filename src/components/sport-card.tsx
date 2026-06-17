@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { SportMotif } from "@/components/sport-motif";
 
 export function SportCard({
   sport,
@@ -23,12 +24,12 @@ export function SportCard({
         style={{ background: sport.colorHex }}
         aria-hidden
       />
-      {/* ghost letter */}
+      {/* sport motif */}
       <span
-        className="font-display pointer-events-none absolute -bottom-6 -right-2 text-8xl leading-none text-white/5"
+        className="pointer-events-none absolute -bottom-4 -right-3 text-white/8 transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110"
         aria-hidden
       >
-        {sport.name[0]}
+        <SportMotif sport={sport.name} size={92} />
       </span>
 
       <div className="relative">
