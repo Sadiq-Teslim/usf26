@@ -1,26 +1,158 @@
 @import "tailwindcss";
 
+/*
+  USF26 — "All or Nothing" design system.
+  Retro-sport: deep indigo canvas, rainbow accents, big wide display type,
+  glossy capsules, sunburst motifs, film grain.
+  Display font: Clash Display (Fontshare) as a stand-in for Base Neue.
+*/
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Core brand */
+  --usf-indigo: #2e2a8c;
+  --usf-indigo-deep: #0e0c2c;
+  --usf-indigo-mid: #161347;
+  --usf-indigo-surface: #1b1856;
+  --usf-indigo-border: #322d6b;
+
+  /* Rainbow accents */
+  --usf-blue: #1b75bc;
+  --usf-orange: #f7941e;
+  --usf-magenta: #ec008c;
+  --usf-yellow: #ffd200;
+  --usf-green: #8dc63f;
+  --usf-red: #e63946;
+  --usf-teal: #2ec4b6;
+
+  /* Semantic */
+  --background: var(--usf-indigo-deep);
+  --foreground: #f5f4ff;
+  --muted: #aba8d8;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+
+  --color-indigo-brand: var(--usf-indigo);
+  --color-indigo-deep: var(--usf-indigo-deep);
+  --color-indigo-mid: var(--usf-indigo-mid);
+  --color-surface: var(--usf-indigo-surface);
+  --color-border-brand: var(--usf-indigo-border);
+
+  --color-brand-blue: var(--usf-blue);
+  --color-brand-orange: var(--usf-orange);
+  --color-brand-magenta: var(--usf-magenta);
+  --color-brand-yellow: var(--usf-yellow);
+  --color-brand-green: var(--usf-green);
+  --color-brand-red: var(--usf-red);
+  --color-brand-teal: var(--usf-teal);
+
+  --font-display: "Clash Display", var(--font-inter), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+
+  --animate-marquee: marquee 28s linear infinite;
+  --animate-spin-slow: spin 36s linear infinite;
+  --animate-shimmer: shimmer 2.2s ease-in-out infinite;
+  --animate-pulse-ring: pulse-ring 1.6s ease-out infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(60rem 40rem at 15% -5%, color-mix(in srgb, var(--usf-magenta) 18%, transparent), transparent 60%),
+    radial-gradient(55rem 38rem at 100% 0%, color-mix(in srgb, var(--usf-blue) 20%, transparent), transparent 55%),
+    radial-gradient(50rem 50rem at 50% 120%, color-mix(in srgb, var(--usf-indigo) 45%, transparent), transparent 60%),
+    var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Film grain overlay */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* Display type: wide + heavy, poster feel */
+.font-display {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.display-wide {
+  font-family: var(--font-display);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  transform: scaleX(1.06);
+  transform-origin: left;
+}
+.text-outline {
+  -webkit-text-stroke: 1.5px currentColor;
+  color: transparent;
+}
+.text-gradient-rainbow {
+  background: linear-gradient(
+    90deg,
+    var(--usf-blue),
+    var(--usf-magenta),
+    var(--usf-orange),
+    var(--usf-yellow),
+    var(--usf-green)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Glossy capsule used for scores/pills */
+.capsule {
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.16), rgba(255, 255, 255, 0.02));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.25),
+    inset 0 -2px 6px rgba(0, 0, 0, 0.35),
+    0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.glass {
+  background: color-mix(in srgb, var(--usf-indigo-surface) 70%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--usf-indigo-border);
+}
+
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes shimmer {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 1; }
+}
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--usf-magenta) 70%, transparent); }
+  100% { box-shadow: 0 0 0 10px transparent; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
