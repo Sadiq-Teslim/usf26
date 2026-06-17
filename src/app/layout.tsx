@@ -73,7 +73,10 @@ export default function RootLayout({
           href="https://api.fontshare.com/v2/css?f[]=clash-display@400,500,600,700&display=swap"
         />
       </head>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        <div className="usf-bg" aria-hidden />
+        {children}
+      </body>
     </html>
   );
 }
