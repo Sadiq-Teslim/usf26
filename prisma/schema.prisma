@@ -1,0 +1,165 @@
+// USF26 data model.
+// Dev: SQLite (no native enums/json — enums are Strings with documented values,
+// JSON stored via Prisma's Json type). Production target: Postgres (Supabase).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+/// One of the 9 fixed departments/associations. Seeded once.
+model Group {
+  id        String  @id @default(cuid())
+  name      String
+  shortName String
+  code      String  @unique // MECH, CEG, ASES, MME, CHG, PGG, BME, SEES, SVY
+  colorHex  String  @default("#2e2a8c")
+  logoUrl   String?
+  sortOrder Int     @default(0)
+
+  participants SportParticipant[]
+  homeFixtures Fixture[]          @relation("HomeGroup")
+  awayFixtures Fixture[]          @relation("AwayGroup")
+  wonFixtures  Fixture[]          @relation("WinnerGroup")
+  standings    Standing[]
+}
+
+/// A sport, e.g. Football. STANDARD sports have divisions/stages/fixtures/standings.
+/// RESULTS_ONLY sports (Table Tennis, Athletics) use ResultEntry instead.
+model Sport {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  icon        String?
+  colorHex    String   @default("#2e2a8c")
+  format      String   @default("LEAGUE_AND_KNOCKOUT") // LEAGUE | KNOCKOUT | LEAGUE_AND_KNOCKOUT
+  displayMode String   @default("STANDARD") // STANDARD | RESULTS_ONLY
+  tablePreset String   @default("FOOTBALL") // FOOTBALL | BASKETBALL | SETS
+  statColumns Json? // ordered [{ key, label, auto }] — derived from preset, editable
+  pointsWin   Int      @default(3)
+  pointsDraw  Int      @default(1)
+  pointsLoss  Int      @default(0)
+  allowDraws  Boolean  @default(true)
+  tiebreakers Json? // ordered list of column keys
+  isPublished Boolean  @default(false)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  divisions     Division[]
+  resultEntries ResultEntry[]
+}
+
+/// A gendered (or mixed) competition under a sport.
+model Division {
+  id          String  @id @default(cuid())
+  sportId     String
+  sport       Sport   @relation(fields: [sportId], references: [id], onDelete: Cascade)
+  kind        String // MALE | FEMALE | MIXED
+  name        String // display name e.g. "Male", "Female", "Mixed"
+  sortOrder   Int     @default(0)
+  isPublished Boolean @default(false)
+
+  participants SportParticipant[]
+  stages       Stage[]
+  fixtures     Fixture[]
+
+  @@unique([sportId, kind])
+}
+
+/// Which groups take part in a division.
+model SportParticipant {
+  id         String   @id @default(cuid())
+  divisionId String
+  division   Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  groupId    String
+  group      Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([divisionId, groupId])
+}
+
+/// A phase within a division: a league group (Group A/B/C) or a knockout round.
+model Stage {
+  id             String  @id @default(cuid())
+  divisionId     String
+  division       Division @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  name           String // "Group A", "Semi-final", "Final"
+  type           String // LEAGUE | KNOCKOUT
+  sortOrder      Int     @default(0)
+  isPublished    Boolean @default(false)
+  tablePublished Boolean @default(false)
+
+  fixtures  Fixture[]
+  standings Standing[]
+}
+
+/// A match between two groups.
+model Fixture {
+  id              String    @id @default(cuid())
+  divisionId      String
+  division        Division  @relation(fields: [divisionId], references: [id], onDelete: Cascade)
+  stageId         String?
+  stage           Stage?    @relation(fields: [stageId], references: [id], onDelete: SetNull)
+  homeGroupId     String
+  homeGroup       Group     @relation("HomeGroup", fields: [homeGroupId], references: [id])
+  awayGroupId     String
+  awayGroup       Group     @relation("AwayGroup", fields: [awayGroupId], references: [id])
+  matchday        Int?
+  scheduledAt     DateTime?
+  venue           String?
+  status          String    @default("SCHEDULED") // SCHEDULED | LIVE | FINISHED | POSTPONED
+  homeScore       Int? // goals / points / sets won (primary score per preset)
+  awayScore       Int?
+  homePoints      Int? // SETS sports: total points scored (for Diff)
+  awayPoints      Int?
+  winnerGroupId   String?
+  winnerGroup     Group?    @relation("WinnerGroup", fields: [winnerGroupId], references: [id])
+  isPublished     Boolean   @default(false)
+  resultPublished Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+/// One table row per group in a league/group stage. Computed + per-column overrides.
+model Standing {
+  id             String   @id @default(cuid())
+  stageId        String
+  stage          Stage    @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  groupId        String
+  group          Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  stats          Json? // computed, keyed by the sport's stat columns
+  overrides      Json? // manual per-column overrides applied on top of stats
+  manualPosition Int?
+  updatedAt      DateTime @updatedAt
+
+  @@unique([stageId, groupId])
+}
+
+/// A curated result row for RESULTS_ONLY sports (placings or match lines).
+model ResultEntry {
+  id          String  @id @default(cuid())
+  sportId     String
+  sport       Sport   @relation(fields: [sportId], references: [id], onDelete: Cascade)
+  category    String? // optional label, e.g. "Male", "Final"
+  title       String // event/round, e.g. "Men's 100m"
+  firstCode   String? // placing 1 group code
+  secondCode  String? // placing 2 group code
+  thirdCode   String? // placing 3 group code
+  lineText    String? // freeform match line, e.g. "MECH 3 - 1 CHG"
+  detailText  String?
+  sortOrder   Int     @default(0)
+  isPublished Boolean @default(false)
+}
+
+/// Super-admin account(s).
+model AdminUser {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+}
