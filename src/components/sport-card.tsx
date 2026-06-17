@@ -9,7 +9,7 @@ export function SportCard({
   return (
     <Link
       href={`/sports/${sport.slug}`}
-      className="group relative block overflow-hidden rounded-2xl border border-border-brand bg-surface/60 p-5 transition-all duration-300 hover:-translate-y-1.5 hover:border-white/30"
+      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border-brand bg-surface/60 p-5 transition-all duration-300 hover:-translate-y-1.5 hover:border-white/30"
     >
       {/* hover glow */}
       <div
@@ -37,7 +37,9 @@ export function SportCard({
           className="inline-block h-2.5 w-2.5 rounded-full"
           style={{ background: sport.colorHex }}
         />
-        <h3 className="font-display mt-3 text-2xl leading-tight">{sport.name}</h3>
+        <h3 className="font-display mt-3 min-h-[2.5em] text-2xl leading-tight">
+          {sport.name}
+        </h3>
         <p className="mt-1 text-[11px] font-semibold uppercase tracking-widest text-muted">
           {sport.displayMode === "RESULTS_ONLY" ? "Results" : "Fixtures · Table"}
         </p>
