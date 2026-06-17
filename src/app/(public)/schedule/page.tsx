@@ -1,4 +1,11 @@
+import type { Metadata } from "next";
 import { Reveal } from "@/components/motion/reveal";
+
+export const metadata: Metadata = {
+  title: "Schedule",
+  description:
+    "Full match schedule for USF'26 — ULES Sport Festival 2026, June 12–24.",
+};
 
 const SCHEDULE = [
   { date: "Jun 12", day: "Fri", label: "Opening Ceremony & Indoor Games", color: "var(--usf-magenta)" },

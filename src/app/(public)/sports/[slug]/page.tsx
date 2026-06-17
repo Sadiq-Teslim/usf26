@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getSportBySlug } from "@/lib/queries";
 import { StandingsTable } from "@/components/standings-table";
@@ -15,6 +16,23 @@ const MEDAL = ["🥇", "🥈", "🥉"];
 
 const isResult = (f: CapsuleFixture) =>
   f.resultPublished && f.homeScore != null;
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const sport = await getSportBySlug(slug);
+  if (!sport) return { title: "Sport not found" };
+  const description = `${sport.name} fixtures, results and standings at USF'26 — ULES Sport Festival 2026.`;
+  return {
+    title: sport.name,
+    description,
+    openGraph: { title: `${sport.name} — USF'26`, description },
+    twitter: { title: `${sport.name} — USF'26`, description },
+  };
+}
 
 export default async function SportPage({
   params,
