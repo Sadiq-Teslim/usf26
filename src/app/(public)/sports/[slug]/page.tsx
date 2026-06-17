@@ -4,8 +4,7 @@ import { getSportBySlug } from "@/lib/queries";
 import { StandingsTable } from "@/components/standings-table";
 import { FixtureList } from "@/components/fixture-list";
 import { SportHero } from "@/components/sport-hero";
-import { DivisionTabs } from "@/components/division-tabs";
-import { ViewTabs } from "@/components/view-tabs";
+import { SportViews } from "@/components/sport-views";
 import { Reveal } from "@/components/motion/reveal";
 import type { PresetKey } from "@/lib/standings";
 import type { CapsuleFixture } from "@/components/score-capsule";
@@ -110,54 +109,47 @@ export default async function SportPage({
     <div className="flex flex-col gap-6">
       <SportHero name={sport.name} color={sport.colorHex} subtitle={subtitle} />
 
-      <div className="flex flex-col gap-3">
-        {divisions.length > 1 && active && (
-          <DivisionTabs
-            slug={slug}
-            divisions={divisions}
-            active={active.kind}
-            view={view}
-          />
-        )}
-        {active && (
-          <ViewTabs slug={slug} div={active.kind} views={views} active={view} />
-        )}
-      </div>
-
       {!active || views.length === 0 ? (
         <Empty>Nothing published for this division yet.</Empty>
       ) : (
-        <div className="mt-2 flex flex-col gap-10">
-          {stagesData.map(({ stage, results, upcoming, hasTable }, i) => {
-            const items =
-              view === "results" ? results : view === "fixtures" ? upcoming : [];
-            const showStage =
-              view === "table" ? hasTable : items.length > 0;
-            if (!showStage) return null;
-            return (
-              <Reveal key={stage.id} delay={i * 0.05}>
-                <section className="flex flex-col gap-4">
-                  <div className="flex items-center gap-3">
-                    <span
-                      className="h-5 w-1.5 rounded-full"
-                      style={{ background: sport.colorHex }}
-                    />
-                    <h3 className="font-display text-2xl">{stage.name}</h3>
-                  </div>
-                  {view === "table" ? (
-                    <StandingsTable
-                      title={`${stage.name} table`}
-                      preset={preset}
-                      rows={stage.standings}
-                    />
-                  ) : (
-                    <FixtureList fixtures={items} />
-                  )}
-                </section>
-              </Reveal>
-            );
-          })}
-        </div>
+        <SportViews
+          slug={slug}
+          divisions={divisions.map((d) => ({ id: d.id, kind: d.kind, name: d.name }))}
+          activeDiv={active.kind}
+          views={views}
+          activeView={view}
+        >
+          <div className="flex flex-col gap-10">
+            {stagesData.map(({ stage, results, upcoming, hasTable }, i) => {
+              const items =
+                view === "results" ? results : view === "fixtures" ? upcoming : [];
+              const showStage = view === "table" ? hasTable : items.length > 0;
+              if (!showStage) return null;
+              return (
+                <Reveal key={stage.id} delay={i * 0.05}>
+                  <section className="flex flex-col gap-4">
+                    <div className="flex items-center gap-3">
+                      <span
+                        className="h-5 w-1.5 rounded-full"
+                        style={{ background: sport.colorHex }}
+                      />
+                      <h3 className="font-display text-2xl">{stage.name}</h3>
+                    </div>
+                    {view === "table" ? (
+                      <StandingsTable
+                        title={`${stage.name} table`}
+                        preset={preset}
+                        rows={stage.standings}
+                      />
+                    ) : (
+                      <FixtureList fixtures={items} />
+                    )}
+                  </section>
+                </Reveal>
+              );
+            })}
+          </div>
+        </SportViews>
       )}
     </div>
   );

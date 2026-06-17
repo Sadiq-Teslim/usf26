@@ -45,7 +45,7 @@ export function IntroOverlay() {
       {show && (
         <motion.div
           key="intro"
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-indigo-deep"
+          className="fixed inset-0 z-100 flex h-dvh w-screen items-center justify-center bg-indigo-deep"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.6, ease: "easeInOut" }}
@@ -58,7 +58,7 @@ export function IntroOverlay() {
             autoPlay
             preload="auto"
             onEnded={() => setShow(false)}
-            className="h-full w-full object-contain"
+            className="h-full w-full object-cover"
           />
           <button
             onClick={() => setShow(false)}
