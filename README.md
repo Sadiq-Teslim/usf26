@@ -1,36 +1,48 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# USF'26 — ULES Sport Festival 2026
 
-## Getting Started
+Public + admin web app for the University of Lagos Engineering Society Sport
+Festival 2026. *All or Nothing.*
 
-First, run the development server:
+See [PRD.md](PRD.md) and [BUILD_PLAN.md](BUILD_PLAN.md) for the full spec.
 
+## Stack
+- **Next.js 16** (App Router, TypeScript) + **Tailwind v4**
+- **Prisma + SQLite** for local dev (production target: Postgres / Supabase)
+- Server Actions for all admin mutations; HMAC cookie session for the super-admin
+
+## Run locally
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npx prisma migrate dev      # create the SQLite DB
+npm run db:seed             # seed the 9 groups + logged festival data
+npm run dev                 # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Public site: http://localhost:3000
+- Admin: http://localhost:3000/admin
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Admin login
+Credentials come from `.env` (used by the seed):
+- email: `ADMIN_EMAIL` (default `sadiqadetola08@gmail.com`)
+- password: `ADMIN_PASSWORD` (default `changeme-usf26`)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Change these in `.env` and re-run `npm run db:seed` to apply.
 
-## Learn More
+## Useful scripts
+- `npm run db:seed` — reset + reseed all data from the parsed festival data
+- `npm run db:reset` — drop and recreate the database
+- `npx prisma studio` — browse/edit the database in a GUI
 
-To learn more about Next.js, take a look at the following resources:
+## What's built
+- Public: sports list, sport pages with Male/Female/Mixed division tabs,
+  group-stage standings (Football/Basketball/Sets presets), fixtures & results,
+  schedule. Only published items show.
+- Admin: login, dashboard, full Sports CRUD, divisions, participants, stages,
+  fixtures & results entry, publish toggles at every level, auto-calculated
+  standings with **per-column override** + recalculate.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Remaining (see BUILD_PLAN.md)
+- Results-only editor (Athletics / Table Tennis entries)
+- Live auto-updating scores (polling now → Supabase Realtime on deploy)
+- Polish, logo/SVG assets, brand fonts (Base Neue / Magnetic), deploy to
+  Vercel + Postgres.
