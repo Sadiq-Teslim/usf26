@@ -100,12 +100,15 @@ body {
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
+  background-color: var(--usf-indigo-deep);
+  background-image:
     radial-gradient(60rem 40rem at 15% -5%, color-mix(in srgb, var(--usf-magenta) 16%, transparent), transparent 60%),
     radial-gradient(55rem 38rem at 100% 0%, color-mix(in srgb, var(--usf-blue) 18%, transparent), transparent 55%),
     radial-gradient(50rem 50rem at 50% 120%, color-mix(in srgb, var(--usf-indigo) 40%, transparent), transparent 60%),
-    url("/bg.png") center center / cover no-repeat,
-    var(--usf-indigo-deep);
+    url("/bg.png");
+  background-repeat: no-repeat, no-repeat, no-repeat, repeat;
+  background-position: center, center, center, top left;
+  background-size: auto, auto, auto, 460px auto;
 }
 
 /* Film grain overlay */
