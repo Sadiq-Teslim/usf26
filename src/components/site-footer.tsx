@@ -1,4 +1,5 @@
 import { Sunburst } from "@/components/motion/sunburst";
+import { SponsorsBar } from "@/components/sponsors-bar";
 
 export function SiteFooter() {
   return (
@@ -9,6 +10,9 @@ export function SiteFooter() {
         opacity={0.1}
         spin={false}
       />
+      <div className="relative pt-10">
+        <SponsorsBar />
+      </div>
       <div className="relative mx-auto flex max-w-6xl flex-col items-center gap-2 px-4 py-12 text-center">
         <p className="font-display text-3xl">
           USF<span className="text-brand-yellow">&rsquo;26</span>
