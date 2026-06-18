@@ -52,7 +52,7 @@ export function AdminMobileNav({
               onClick={() => setOpen(false)}
             />
             <motion.aside
-              className="glass fixed inset-y-0 left-0 z-50 flex w-72 max-w-[80%] flex-col p-4 sm:hidden"
+              className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[80%] flex-col border-r border-border-brand bg-indigo-mid p-4 shadow-2xl sm:hidden"
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
