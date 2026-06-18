@@ -31,6 +31,34 @@ export async function quickResult(fixtureId: string, formData: FormData) {
   revalidatePath(`/admin/sports/${f.division.sportId}`);
 }
 
+/** Create a fixture straight from the dashboard. */
+export async function createFixture(formData: FormData) {
+  const divisionId = String(formData.get("divisionId") ?? "");
+  const stageId = String(formData.get("stageId") ?? "") || null;
+  const homeGroupId = String(formData.get("homeGroupId") ?? "");
+  const awayGroupId = String(formData.get("awayGroupId") ?? "");
+  if (!divisionId || !homeGroupId || !awayGroupId || homeGroupId === awayGroupId)
+    return;
+  const when = String(formData.get("scheduledAt") ?? "").trim();
+  await db.fixture.create({
+    data: {
+      divisionId,
+      stageId,
+      homeGroupId,
+      awayGroupId,
+      scheduledAt: when ? new Date(when) : null,
+      venue: String(formData.get("venue") ?? "").trim() || null,
+      status: "SCHEDULED",
+      isPublished: true,
+    },
+  });
+  if (stageId) await recomputeStage(stageId);
+  const div = await db.division.findUnique({ where: { id: divisionId } });
+  revalidatePath("/admin");
+  revalidatePath("/");
+  if (div) revalidatePath(`/admin/sports/${div.sportId}`);
+}
+
 /** Flip a fixture to LIVE / SCHEDULED quickly. */
 export async function setFixtureStatus(fixtureId: string, status: string) {
   const f = await db.fixture.update({

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { db } from "@/lib/db";
 import { quickResult } from "./dashboard-actions";
+import { AddFixtureForm } from "@/components/admin/add-fixture-form";
 
 export const dynamic = "force-dynamic";
 
@@ -118,8 +119,16 @@ function ResultForm({ f }: { f: Row }) {
 }
 
 export default async function AdminDashboard() {
-  const [sportsCount, published, fixtures, liveCount, pending, recent, sports] =
-    await Promise.all([
+  const [
+    sportsCount,
+    published,
+    fixtures,
+    liveCount,
+    pending,
+    recent,
+    sports,
+    divisions,
+  ] = await Promise.all([
       db.sport.count(),
       db.sport.count({ where: { isPublished: true } }),
       db.fixture.count(),
@@ -155,7 +164,27 @@ export default async function AdminDashboard() {
           },
         },
       }),
+      db.division.findMany({
+        where: { sport: { displayMode: "STANDARD" } },
+        orderBy: { sortOrder: "asc" },
+        include: {
+          sport: true,
+          stages: { orderBy: { sortOrder: "asc" } },
+          participants: { include: { group: true } },
+        },
+      }),
     ]);
+
+  const divisionOptions = divisions
+    .map((d) => ({
+      id: d.id,
+      label: `${d.sport.name} — ${d.name}`,
+      stages: d.stages.map((s) => ({ id: s.id, name: s.name })),
+      groups: d.participants
+        .map((p) => ({ id: p.group.id, code: p.group.code }))
+        .sort((a, b) => a.code.localeCompare(b.code)),
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
 
   const stats = [
     { label: "Sports", value: sportsCount, sub: `${published} published` },
@@ -225,6 +254,12 @@ export default async function AdminDashboard() {
             </ul>
           </details>
         )}
+      </section>
+
+      {/* Add a fixture from the dashboard */}
+      <section className="flex flex-col gap-3">
+        <h2 className="font-display text-lg">Add a fixture</h2>
+        <AddFixtureForm divisions={divisionOptions} />
       </section>
 
       {/* Navigator — full access to every competition */}
