@@ -2,6 +2,7 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { quickResult } from "./dashboard-actions";
 import { AddFixtureForm } from "@/components/admin/add-fixture-form";
+import { Crest } from "@/components/crest";
 
 export const dynamic = "force-dynamic";
 
@@ -28,8 +29,8 @@ type Row = {
   homePoints: number | null;
   awayPoints: number | null;
   resultPublished: boolean;
-  homeGroup: { code: string };
-  awayGroup: { code: string };
+  homeGroup: { code: string; colorHex: string; logoUrl: string | null };
+  awayGroup: { code: string; colorHex: string; logoUrl: string | null };
   stage: { name: string } | null;
   division: { name: string; sport: { name: string; tablePreset: string } };
 };
@@ -56,8 +57,14 @@ function ResultForm({ f }: { f: Row }) {
         action={quickResult.bind(null, f.id)}
         className="flex flex-wrap items-center gap-2"
       >
-        <span className="w-24 text-right text-sm font-bold">
+        <span className="flex w-28 items-center justify-end gap-1.5 text-sm font-bold">
           {f.homeGroup.code}
+          <Crest
+            code={f.homeGroup.code}
+            color={f.homeGroup.colorHex}
+            logoUrl={f.homeGroup.logoUrl}
+            size={22}
+          />
         </span>
         <input
           name="homeScore"
@@ -74,7 +81,15 @@ function ResultForm({ f }: { f: Row }) {
           className={`${inp} w-14 text-center`}
           aria-label="away score"
         />
-        <span className="w-24 text-sm font-bold">{f.awayGroup.code}</span>
+        <span className="flex w-28 items-center gap-1.5 text-sm font-bold">
+          <Crest
+            code={f.awayGroup.code}
+            color={f.awayGroup.colorHex}
+            logoUrl={f.awayGroup.logoUrl}
+            size={22}
+          />
+          {f.awayGroup.code}
+        </span>
 
         {isSets && (
           <span className="flex items-center gap-1 text-[11px] text-muted">
@@ -187,9 +202,24 @@ export default async function AdminDashboard() {
     .sort((a, b) => a.label.localeCompare(b.label));
 
   const stats = [
-    { label: "Sports", value: sportsCount, sub: `${published} published` },
-    { label: "Fixtures", value: fixtures, sub: `${pending.length} to play` },
-    { label: "Live now", value: liveCount, sub: "in progress" },
+    {
+      label: "Sports",
+      value: sportsCount,
+      sub: `${published} published`,
+      accent: "var(--usf-blue)",
+    },
+    {
+      label: "Fixtures",
+      value: fixtures,
+      sub: `${pending.length} to play`,
+      accent: "var(--usf-green)",
+    },
+    {
+      label: "Live now",
+      value: liveCount,
+      sub: "in progress",
+      accent: "var(--usf-magenta)",
+    },
   ];
 
   return (
@@ -205,16 +235,21 @@ export default async function AdminDashboard() {
         </Link>
       </div>
 
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid grid-cols-3 gap-3 sm:gap-4">
         {stats.map((s) => (
           <div
             key={s.label}
-            className="rounded-xl border border-border-brand bg-surface p-4"
+            className="relative overflow-hidden rounded-2xl border border-border-brand bg-surface p-4"
           >
-            <p className="text-xs uppercase tracking-wide text-muted">
+            <span
+              className="absolute left-0 top-0 h-full w-1"
+              style={{ background: s.accent }}
+              aria-hidden
+            />
+            <p className="text-[11px] uppercase tracking-wide text-muted">
               {s.label}
             </p>
-            <p className="font-display text-3xl">{s.value}</p>
+            <p className="font-display text-3xl sm:text-4xl">{s.value}</p>
             <p className="text-xs text-muted">{s.sub}</p>
           </div>
         ))}

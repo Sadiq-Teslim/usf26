@@ -2,10 +2,14 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getAdmin } from "@/lib/auth";
 import { logout } from "./actions";
+import { AdminNav } from "@/components/admin/admin-nav";
 
-const NAV = [
-  { href: "/admin", label: "Dashboard" },
-  { href: "/admin/sports", label: "Sports" },
+const RAINBOW = [
+  "var(--usf-blue)",
+  "var(--usf-orange)",
+  "var(--usf-magenta)",
+  "var(--usf-yellow)",
+  "var(--usf-green)",
 ];
 
 export default async function AdminLayout({
@@ -17,36 +21,60 @@ export default async function AdminLayout({
   if (!admin) redirect("/admin/login");
 
   return (
-    <div className="flex min-h-screen">
-      <aside className="glass hidden w-56 shrink-0 flex-col p-4 sm:flex">
-        <Link href="/admin" className="font-display text-xl">
-          USF<span className="text-brand-yellow">&rsquo;26</span> Admin
-        </Link>
-        <nav className="mt-6 flex flex-col gap-1 text-sm">
-          {NAV.map((n) => (
-            <Link
-              key={n.href}
-              href={n.href}
-              className="rounded-lg px-3 py-2 text-muted hover:bg-white/5 hover:text-foreground"
-            >
-              {n.label}
-            </Link>
+    <div className="flex min-h-screen flex-col sm:flex-row">
+      {/* Sidebar (desktop) */}
+      <aside className="glass sticky top-0 hidden h-screen w-60 shrink-0 flex-col p-4 sm:flex">
+        <div className="mb-1 flex h-1 overflow-hidden rounded-full">
+          {RAINBOW.map((c) => (
+            <span key={c} className="flex-1" style={{ background: c }} />
           ))}
-        </nav>
-        <div className="mt-auto pt-4 text-xs text-muted">
-          <p className="truncate">{admin.email}</p>
+        </div>
+        <Link href="/admin" className="mt-3 flex items-center gap-2">
+          <span className="font-display text-xl">
+            USF<span className="text-brand-yellow">&rsquo;26</span>
+          </span>
+          <span className="rounded-md bg-white/10 px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-widest text-muted">
+            Admin
+          </span>
+        </Link>
+
+        <AdminNav />
+
+        <div className="mt-auto border-t border-border-brand pt-4 text-xs text-muted">
+          <p className="mb-2 truncate font-medium text-foreground/70">
+            {admin.email}
+          </p>
+          <Link
+            href="/"
+            target="_blank"
+            className="block rounded-lg px-1 py-1 hover:text-foreground"
+          >
+            View public site &rarr;
+          </Link>
           <form action={logout}>
-            <button className="mt-2 text-brand-magenta hover:underline">
+            <button className="mt-1 px-1 text-brand-magenta hover:underline">
               Sign out
             </button>
           </form>
-          <Link href="/" className="mt-2 block hover:underline">
-            View public site &rarr;
-          </Link>
         </div>
       </aside>
 
-      <main className="flex-1 px-4 py-6 sm:px-8">
+      {/* Top bar (mobile) */}
+      <header className="glass sticky top-0 z-30 flex items-center justify-between gap-3 px-4 py-3 sm:hidden">
+        <Link href="/admin" className="font-display text-lg">
+          USF<span className="text-brand-yellow">&rsquo;26</span> Admin
+        </Link>
+        <div className="flex items-center gap-2">
+          <AdminNav />
+          <form action={logout}>
+            <button className="rounded-lg px-2 py-1 text-xs text-brand-magenta">
+              Sign out
+            </button>
+          </form>
+        </div>
+      </header>
+
+      <main className="flex-1 px-4 py-6 sm:px-8 sm:py-8">
         <div className="mx-auto max-w-5xl">{children}</div>
       </main>
     </div>
