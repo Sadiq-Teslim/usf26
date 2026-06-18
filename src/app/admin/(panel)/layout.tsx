@@ -24,7 +24,10 @@ export default async function AdminLayout({
   return (
     <div className="flex min-h-screen flex-col sm:flex-row">
       {/* Sidebar (desktop) */}
-      <aside className="glass sticky top-0 hidden h-screen w-60 shrink-0 flex-col p-4 sm:flex">
+      <aside
+        className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border-brand p-4 sm:flex"
+        style={{ backgroundColor: "#171340" }}
+      >
         <div className="mb-1 flex h-1 overflow-hidden rounded-full">
           {RAINBOW.map((c) => (
             <span key={c} className="flex-1" style={{ background: c }} />
@@ -61,7 +64,10 @@ export default async function AdminLayout({
       </aside>
 
       {/* Top bar (mobile) */}
-      <header className="glass sticky top-0 z-30 flex items-center justify-between gap-3 px-4 py-3 sm:hidden">
+      <header
+        className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-border-brand px-4 py-3 sm:hidden"
+        style={{ backgroundColor: "#171340" }}
+      >
         <AdminMobileNav email={admin.email} logout={logout} />
         <Link href="/admin" className="font-display text-lg">
           USF<span className="text-brand-yellow">&rsquo;26</span> Admin

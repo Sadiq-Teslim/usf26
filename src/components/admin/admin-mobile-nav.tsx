@@ -52,7 +52,8 @@ export function AdminMobileNav({
               onClick={() => setOpen(false)}
             />
             <motion.aside
-              className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[80%] flex-col border-r border-border-brand bg-indigo-mid p-4 shadow-2xl sm:hidden"
+              className="fixed inset-y-0 left-0 z-50 flex w-72 max-w-[80%] flex-col border-r border-border-brand p-4 shadow-2xl sm:hidden"
+              style={{ backgroundColor: "#171340" }}
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
