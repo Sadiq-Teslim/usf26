@@ -255,40 +255,64 @@ export default async function AdminDashboard() {
         ))}
       </div>
 
-      {/* Match Centre — enter results fast */}
-      <section className="flex flex-col gap-3">
-        <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg">Match Centre</h2>
-          <span className="text-xs text-muted">
-            Enter a score, set Finished + publish, Save. Tables recalculate
-            automatically.
-          </span>
-        </div>
-        {pending.length === 0 ? (
-          <p className="rounded-xl border border-dashed border-border-brand p-4 text-sm text-muted">
-            No scheduled or live fixtures. Add fixtures from a sport&rsquo;s
-            stage below.
-          </p>
-        ) : (
-          <ul className="flex flex-col gap-2">
-            {pending.map((f) => (
-              <ResultForm key={f.id} f={f} />
-            ))}
-          </ul>
-        )}
+      {/* Match Centre — enter results fast (accordion) */}
+      <section>
+        <details
+          open
+          className="group rounded-2xl border border-border-brand bg-surface/40"
+        >
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 [&::-webkit-details-marker]:hidden">
+            <div className="flex items-center gap-2">
+              <h2 className="font-display text-lg">Match Centre</h2>
+              <span className="rounded-full bg-brand-magenta/20 px-2 py-0.5 text-xs font-bold text-brand-magenta">
+                {pending.length}
+              </span>
+            </div>
+            <svg
+              className="text-muted transition-transform duration-300 group-open:rotate-180"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </summary>
+          <div className="flex flex-col gap-3 border-t border-border-brand px-4 py-4">
+            <p className="text-xs text-muted">
+              Enter a score, set Finished + publish, Save. Tables recalculate
+              automatically.
+            </p>
+            {pending.length === 0 ? (
+              <p className="rounded-xl border border-dashed border-border-brand p-4 text-sm text-muted">
+                No scheduled or live fixtures. Add one below.
+              </p>
+            ) : (
+              <ul className="flex flex-col gap-2">
+                {pending.map((f) => (
+                  <ResultForm key={f.id} f={f} />
+                ))}
+              </ul>
+            )}
 
-        {recent.length > 0 && (
-          <details className="mt-2">
-            <summary className="cursor-pointer text-xs font-semibold text-muted hover:text-foreground">
-              Recently finished ({recent.length}) — edit a result
-            </summary>
-            <ul className="mt-2 flex flex-col gap-2">
-              {recent.map((f) => (
-                <ResultForm key={f.id} f={f} />
-              ))}
-            </ul>
-          </details>
-        )}
+            {recent.length > 0 && (
+              <details className="mt-1">
+                <summary className="cursor-pointer text-xs font-semibold text-muted hover:text-foreground">
+                  Recently finished ({recent.length}) — edit a result
+                </summary>
+                <ul className="mt-2 flex flex-col gap-2">
+                  {recent.map((f) => (
+                    <ResultForm key={f.id} f={f} />
+                  ))}
+                </ul>
+              </details>
+            )}
+          </div>
+        </details>
       </section>
 
       {/* Add a fixture from the dashboard */}

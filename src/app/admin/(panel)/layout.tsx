@@ -3,6 +3,7 @@ import { redirect } from "next/navigation";
 import { getAdmin } from "@/lib/auth";
 import { logout } from "./actions";
 import { AdminNav } from "@/components/admin/admin-nav";
+import { AdminMobileNav } from "@/components/admin/admin-mobile-nav";
 
 const RAINBOW = [
   "var(--usf-blue)",
@@ -61,17 +62,11 @@ export default async function AdminLayout({
 
       {/* Top bar (mobile) */}
       <header className="glass sticky top-0 z-30 flex items-center justify-between gap-3 px-4 py-3 sm:hidden">
+        <AdminMobileNav email={admin.email} logout={logout} />
         <Link href="/admin" className="font-display text-lg">
           USF<span className="text-brand-yellow">&rsquo;26</span> Admin
         </Link>
-        <div className="flex items-center gap-2">
-          <AdminNav />
-          <form action={logout}>
-            <button className="rounded-lg px-2 py-1 text-xs text-brand-magenta">
-              Sign out
-            </button>
-          </form>
-        </div>
+        <span className="w-9" aria-hidden />
       </header>
 
       <main className="flex-1 px-4 py-6 sm:px-8 sm:py-8">

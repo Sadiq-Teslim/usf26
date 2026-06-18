@@ -23,7 +23,7 @@ const NAV = [
 export function AdminNav() {
   const path = usePathname();
   return (
-    <nav className="flex gap-1 sm:mt-6 sm:flex-col">
+    <nav className="flex flex-col gap-1">
       {NAV.map((n) => {
         const active =
           n.href === "/admin" ? path === "/admin" : path.startsWith(n.href);
