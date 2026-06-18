@@ -14,6 +14,8 @@ type Row = {
   manualPosition: number | null;
 };
 
+const SURFACE = "var(--usf-indigo-surface)";
+
 export function StandingsTable({
   title,
   preset,
@@ -38,13 +40,17 @@ export function StandingsTable({
         </span>
       </div>
       <div className="overflow-x-auto">
-        <table className="w-full text-sm">
+        <table className="w-full border-separate border-spacing-0 text-sm">
           <thead>
             <tr className="text-left text-[11px] uppercase text-muted">
-              <th className="px-3 py-2 font-medium">#</th>
-              <th className="px-2 py-2 font-medium">Team</th>
+              <th className="sticky left-0 z-20 border-b border-r border-border-brand bg-surface px-3 py-2 font-medium">
+                Team
+              </th>
               {columns.map((c) => (
-                <th key={c.key} className="px-2 py-2 text-center font-medium">
+                <th
+                  key={c.key}
+                  className="border-b border-border-brand px-2.5 py-2 text-center font-medium"
+                >
                   {c.label}
                 </th>
               ))}
@@ -53,31 +59,25 @@ export function StandingsTable({
           <tbody>
             {ranked.map((r, i) => {
               const leader = i === 0 && (r.stats.P ?? 0) > 0;
+              const stickyBg = leader
+                ? `linear-gradient(90deg, ${r.group.colorHex}38, ${r.group.colorHex}10 90%), ${SURFACE}`
+                : SURFACE;
               return (
-                <tr
-                  key={r.group.id}
-                  className="relative border-t border-border-brand/60"
-                  style={
-                    leader
-                      ? {
-                          background: `linear-gradient(90deg, ${r.group.colorHex}22, transparent 70%)`,
-                        }
-                      : undefined
-                  }
-                >
-                  <td className="px-3 py-2.5">
-                    <span
-                      className={`inline-flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold ${
-                        leader
-                          ? "bg-brand-yellow text-indigo-deep"
-                          : "bg-white/5 text-muted"
-                      }`}
-                    >
-                      {i + 1}
-                    </span>
-                  </td>
-                  <td className="px-2 py-2.5">
-                    <span className="flex items-center gap-2 whitespace-nowrap">
+                <tr key={r.group.id} className="group">
+                  <td
+                    className="sticky left-0 z-10 border-b border-r border-border-brand/60 px-3 py-2.5"
+                    style={{ background: stickyBg }}
+                  >
+                    <span className="flex items-center gap-2.5 whitespace-nowrap">
+                      <span
+                        className={`inline-flex h-6 w-6 items-center justify-center rounded-md text-xs font-bold ${
+                          leader
+                            ? "bg-brand-yellow text-indigo-deep"
+                            : "bg-white/5 text-muted"
+                        }`}
+                      >
+                        {i + 1}
+                      </span>
                       <Crest
                         code={r.group.code}
                         color={r.group.colorHex}
@@ -90,7 +90,7 @@ export function StandingsTable({
                   {columns.map((c) => (
                     <td
                       key={c.key}
-                      className={`relative px-2 py-2.5 text-center tabular-nums ${
+                      className={`relative border-b border-border-brand/60 px-2.5 py-2.5 text-center tabular-nums ${
                         c.key === "Pts"
                           ? "font-display text-base text-foreground"
                           : "text-muted"
@@ -98,9 +98,9 @@ export function StandingsTable({
                     >
                       {c.key === "Pts" && (
                         <span
-                          className="absolute inset-x-1 bottom-1 h-1 rounded-full"
+                          className="absolute inset-x-1.5 bottom-1 h-1 rounded-full"
                           style={{
-                            width: `calc(${((r.stats.Pts ?? 0) / maxPts) * 100}% - 0.5rem)`,
+                            width: `calc(${((r.stats.Pts ?? 0) / maxPts) * 100}% - 0.75rem)`,
                             background: r.group.colorHex,
                             opacity: 0.55,
                           }}
