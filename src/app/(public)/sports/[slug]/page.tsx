@@ -6,6 +6,7 @@ import { FixtureList } from "@/components/fixture-list";
 import { SportHero } from "@/components/sport-hero";
 import { SportViews } from "@/components/sport-views";
 import { Reveal } from "@/components/motion/reveal";
+import { sharedOgImage, sharedTwitterImage } from "@/lib/site";
 import type { PresetKey } from "@/lib/standings";
 import type { CapsuleFixture } from "@/components/score-capsule";
 
@@ -28,8 +29,17 @@ export async function generateMetadata({
   return {
     title: sport.name,
     description,
-    openGraph: { title: `${sport.name} — USF'26`, description },
-    twitter: { title: `${sport.name} — USF'26`, description },
+    openGraph: {
+      title: `${sport.name} — USF'26`,
+      description,
+      images: [sharedOgImage],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${sport.name} — USF'26`,
+      description,
+      images: [sharedTwitterImage],
+    },
   };
 }
 
