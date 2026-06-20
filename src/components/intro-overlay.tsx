@@ -21,6 +21,7 @@ export function IntroOverlay() {
   useEffect(() => {
     const seen = sessionStorage.getItem("usf-intro-seen");
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time client-only decision from sessionStorage
     if (!seen && !reduce) setShow(true);
     sessionStorage.setItem("usf-intro-seen", "1");
   }, []);

@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { motion } from "motion/react";
 
 type Tab = { key: string; label: string };
@@ -29,17 +29,17 @@ export function SportViews({
 }) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
-  const [div, setDiv] = useState(activeDiv);
-  const [view, setView] = useState(activeView);
-
-  // Reconcile once the server catches up to the optimistic selection.
-  useEffect(() => setDiv(activeDiv), [activeDiv]);
-  useEffect(() => setView(activeView), [activeView]);
+  // Optimistic target shown only while the navigation transition is in flight;
+  // once it resolves we fall back to the real props (no effect needed).
+  const [target, setTarget] = useState<{ div: string; view: string } | null>(
+    null,
+  );
+  const div = pending && target ? target.div : activeDiv;
+  const view = pending && target ? target.view : activeView;
 
   const navigate = (nextDiv: string, nextView: string) => {
     if (nextDiv === div && nextView === view) return;
-    setDiv(nextDiv);
-    setView(nextView);
+    setTarget({ div: nextDiv, view: nextView });
     startTransition(() => {
       router.push(`/sports/${slug}?div=${nextDiv}&view=${nextView}`, {
         scroll: false,

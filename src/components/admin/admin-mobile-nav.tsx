@@ -18,6 +18,7 @@ export function AdminMobileNav({
 
   // Close on navigation
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- close drawer when route changes
     setOpen(false);
   }, [path]);
 
