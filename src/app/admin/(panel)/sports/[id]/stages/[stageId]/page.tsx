@@ -11,6 +11,7 @@ import {
   updateStandingOverride,
   resetStandingOverride,
 } from "../../fixture-actions";
+import { FixtureResultCard } from "@/components/admin/fixture-result-card";
 
 export const dynamic = "force-dynamic";
 
@@ -196,91 +197,20 @@ export default async function StagePage({
         <h2 className="font-display text-lg">Fixtures &amp; results</h2>
         <ul className="flex flex-col gap-2">
           {stage.fixtures.map((f) => (
-            <li
+            <FixtureResultCard
               key={f.id}
-              className="rounded-xl border border-border-brand bg-surface p-3"
-            >
-              <form
-                action={updateFixture.bind(null, f.id, sportId)}
-                className="flex flex-wrap items-center gap-2"
-              >
-                <span className="w-28 text-right text-sm font-medium">
-                  {f.homeGroup.code}
-                </span>
-                <input
-                  name="homeScore"
-                  type="number"
-                  defaultValue={f.homeScore ?? ""}
-                  className={`${inp} w-14 text-center`}
-                />
-                <span className="text-muted">–</span>
-                <input
-                  name="awayScore"
-                  type="number"
-                  defaultValue={f.awayScore ?? ""}
-                  className={`${inp} w-14 text-center`}
-                />
-                <span className="w-28 text-sm font-medium">{f.awayGroup.code}</span>
-
-                {isSets && (
-                  <span className="flex items-center gap-1 text-xs text-muted">
-                    pts
-                    <input
-                      name="homePoints"
-                      type="number"
-                      defaultValue={f.homePoints ?? ""}
-                      className={`${inp} w-14 text-center`}
-                    />
-                    <input
-                      name="awayPoints"
-                      type="number"
-                      defaultValue={f.awayPoints ?? ""}
-                      className={`${inp} w-14 text-center`}
-                    />
-                  </span>
-                )}
-
-                <select name="status" defaultValue={f.status} className={inp}>
-                  <option value="SCHEDULED">Scheduled</option>
-                  <option value="LIVE">Live</option>
-                  <option value="FINISHED">Finished</option>
-                  <option value="POSTPONED">Postponed</option>
-                </select>
-                <input
-                  name="venue"
-                  defaultValue={f.venue ?? ""}
-                  placeholder="venue"
-                  className={`${inp} w-24`}
-                />
-                <label className="flex items-center gap-1 text-xs">
-                  <input
-                    type="checkbox"
-                    name="isPublished"
-                    defaultChecked={f.isPublished}
-                  />
-                  show
-                </label>
-                <label className="flex items-center gap-1 text-xs">
-                  <input
-                    type="checkbox"
-                    name="resultPublished"
-                    defaultChecked={f.resultPublished}
-                  />
-                  result
-                </label>
-                <button className="rounded-lg bg-white/10 px-3 py-1 text-xs font-semibold hover:bg-white/20">
-                  Save
-                </button>
-              </form>
-              <form
-                action={deleteFixture.bind(null, f.id, sportId)}
-                className="mt-1"
-              >
-                <button className="text-[10px] text-brand-magenta hover:underline">
-                  delete fixture
-                </button>
-              </form>
-            </li>
+              fixture={f}
+              action={updateFixture.bind(null, f.id, sportId)}
+              isSets={isSets}
+              variant="full"
+              footer={
+                <form action={deleteFixture.bind(null, f.id, sportId)}>
+                  <button className="text-[10px] text-brand-magenta hover:underline">
+                    delete fixture
+                  </button>
+                </form>
+              }
+            />
           ))}
           {stage.fixtures.length === 0 && (
             <p className="text-sm text-muted">No fixtures in this stage yet.</p>

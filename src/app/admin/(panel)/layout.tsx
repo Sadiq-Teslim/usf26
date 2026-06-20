@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { Toaster } from "sonner";
 import { getAdmin } from "@/lib/auth";
 import { logout } from "./actions";
 import { AdminNav } from "@/components/admin/admin-nav";
@@ -23,6 +24,12 @@ export default async function AdminLayout({
 
   return (
     <div className="flex min-h-screen flex-col sm:flex-row">
+      <Toaster
+        position="top-center"
+        richColors
+        theme="dark"
+        toastOptions={{ style: { fontFamily: "var(--font-inter)" } }}
+      />
       {/* Sidebar (desktop) */}
       <aside
         className="sticky top-0 hidden h-screen w-60 shrink-0 flex-col border-r border-border-brand p-4 sm:flex"

@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState, useTransition } from "react";
+import { toast } from "sonner";
 import { createFixture } from "@/app/admin/(panel)/dashboard-actions";
 
 type Div = {
@@ -15,7 +16,27 @@ const inp =
 
 export function AddFixtureForm({ divisions }: { divisions: Div[] }) {
   const [divId, setDivId] = useState(divisions[0]?.id ?? "");
+  const [pending, startTransition] = useTransition();
+  const formRef = useRef<HTMLFormElement>(null);
   const div = divisions.find((d) => d.id === divId);
+
+  function onSubmit(formData: FormData) {
+    const home = formData.get("homeGroupId");
+    const away = formData.get("awayGroupId");
+    if (home && home === away) {
+      toast.error("Home and away can't be the same team");
+      return;
+    }
+    startTransition(async () => {
+      try {
+        await createFixture(formData);
+        toast.success("Fixture added");
+        formRef.current?.reset();
+      } catch {
+        toast.error("Couldn't add fixture — please try again");
+      }
+    });
+  }
 
   if (divisions.length === 0) {
     return (
@@ -27,7 +48,8 @@ export function AddFixtureForm({ divisions }: { divisions: Div[] }) {
 
   return (
     <form
-      action={createFixture}
+      ref={formRef}
+      action={onSubmit}
       className="flex flex-wrap items-end gap-2 rounded-xl border border-dashed border-border-brand p-4"
     >
       <div>
@@ -102,8 +124,14 @@ export function AddFixtureForm({ divisions }: { divisions: Div[] }) {
         <input name="venue" placeholder="venue" className={`${inp} mt-1 w-24`} />
       </div>
 
-      <button className="rounded-lg bg-foreground px-4 py-1.5 text-sm font-bold text-indigo-deep">
-        + Add fixture
+      <button
+        disabled={pending}
+        className="inline-flex items-center gap-2 rounded-lg bg-foreground px-4 py-1.5 text-sm font-bold text-indigo-deep disabled:opacity-60"
+      >
+        {pending && (
+          <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-indigo-deep/40 border-t-indigo-deep" />
+        )}
+        {pending ? "Adding…" : "+ Add fixture"}
       </button>
     </form>
   );

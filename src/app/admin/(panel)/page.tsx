@@ -2,12 +2,9 @@ import Link from "next/link";
 import { db } from "@/lib/db";
 import { quickResult } from "./dashboard-actions";
 import { AddFixtureForm } from "@/components/admin/add-fixture-form";
-import { Crest } from "@/components/crest";
+import { FixtureResultCard } from "@/components/admin/fixture-result-card";
 
 export const dynamic = "force-dynamic";
-
-const inp =
-  "rounded-lg border border-border-brand bg-indigo-deep px-2 py-1 text-sm";
 
 function fmt(d: Date | null) {
   if (!d) return "";
@@ -18,119 +15,6 @@ function fmt(d: Date | null) {
     hour: "2-digit",
     minute: "2-digit",
   });
-}
-
-type Row = {
-  id: string;
-  status: string;
-  scheduledAt: Date | null;
-  homeScore: number | null;
-  awayScore: number | null;
-  homePoints: number | null;
-  awayPoints: number | null;
-  resultPublished: boolean;
-  homeGroup: { code: string; colorHex: string; logoUrl: string | null };
-  awayGroup: { code: string; colorHex: string; logoUrl: string | null };
-  stage: { name: string } | null;
-  division: { name: string; sport: { name: string; tablePreset: string } };
-};
-
-function ResultForm({ f }: { f: Row }) {
-  const isSets = f.division.sport.tablePreset === "SETS";
-  const live = f.status === "LIVE";
-  return (
-    <li className="rounded-xl border border-border-brand bg-surface/70 p-3">
-      <div className="mb-1.5 flex items-center gap-2 text-[11px] text-muted">
-        <span className="font-semibold text-foreground/80">
-          {f.division.sport.name}
-        </span>
-        <span>· {f.division.name}</span>
-        {f.stage && <span>· {f.stage.name}</span>}
-        {f.scheduledAt && <span className="ml-auto">{fmt(f.scheduledAt)}</span>}
-        {live && (
-          <span className="rounded-full bg-brand-magenta/20 px-2 py-0.5 font-bold text-brand-magenta">
-            ● LIVE
-          </span>
-        )}
-      </div>
-      <form
-        action={quickResult.bind(null, f.id)}
-        className="flex flex-wrap items-center gap-2"
-      >
-        <span className="flex w-28 items-center justify-end gap-1.5 text-sm font-bold">
-          {f.homeGroup.code}
-          <Crest
-            code={f.homeGroup.code}
-            color={f.homeGroup.colorHex}
-            logoUrl={f.homeGroup.logoUrl}
-            size={22}
-          />
-        </span>
-        <input
-          name="homeScore"
-          type="number"
-          defaultValue={f.homeScore ?? ""}
-          className={`${inp} w-14 text-center`}
-          aria-label="home score"
-        />
-        <span className="text-muted">–</span>
-        <input
-          name="awayScore"
-          type="number"
-          defaultValue={f.awayScore ?? ""}
-          className={`${inp} w-14 text-center`}
-          aria-label="away score"
-        />
-        <span className="flex w-28 items-center gap-1.5 text-sm font-bold">
-          <Crest
-            code={f.awayGroup.code}
-            color={f.awayGroup.colorHex}
-            logoUrl={f.awayGroup.logoUrl}
-            size={22}
-          />
-          {f.awayGroup.code}
-        </span>
-
-        {isSets && (
-          <span className="flex items-center gap-1 text-[11px] text-muted">
-            pts
-            <input
-              name="homePoints"
-              type="number"
-              defaultValue={f.homePoints ?? ""}
-              className={`${inp} w-12 text-center`}
-              aria-label="home points"
-            />
-            <input
-              name="awayPoints"
-              type="number"
-              defaultValue={f.awayPoints ?? ""}
-              className={`${inp} w-12 text-center`}
-              aria-label="away points"
-            />
-          </span>
-        )}
-
-        <select name="status" defaultValue={f.status} className={inp}>
-          <option value="SCHEDULED">Scheduled</option>
-          <option value="LIVE">Live</option>
-          <option value="FINISHED">Finished</option>
-          <option value="POSTPONED">Postponed</option>
-        </select>
-        <label className="flex items-center gap-1 text-xs">
-          <input
-            type="checkbox"
-            name="resultPublished"
-            defaultChecked={f.resultPublished || f.status !== "FINISHED"}
-          />
-          publish
-        </label>
-        <button className="rounded-lg bg-brand-yellow px-3 py-1 text-xs font-bold text-indigo-deep hover:brightness-110">
-          Save result
-        </button>
-      </form>
-    </li>
-  );
 }
 
 export default async function AdminDashboard() {
@@ -294,7 +178,16 @@ export default async function AdminDashboard() {
             ) : (
               <ul className="flex flex-col gap-2">
                 {pending.map((f) => (
-                  <ResultForm key={f.id} f={f} />
+                  <FixtureResultCard
+                    key={f.id}
+                    fixture={f}
+                    action={quickResult.bind(null, f.id)}
+                    isSets={f.division.sport.tablePreset === "SETS"}
+                    context={`${f.division.sport.name} · ${f.division.name}${
+                      f.stage ? ` · ${f.stage.name}` : ""
+                    }`}
+                    when={fmt(f.scheduledAt)}
+                  />
                 ))}
               </ul>
             )}
@@ -306,7 +199,16 @@ export default async function AdminDashboard() {
                 </summary>
                 <ul className="mt-2 flex flex-col gap-2">
                   {recent.map((f) => (
-                    <ResultForm key={f.id} f={f} />
+                    <FixtureResultCard
+                      key={f.id}
+                      fixture={f}
+                      action={quickResult.bind(null, f.id)}
+                      isSets={f.division.sport.tablePreset === "SETS"}
+                      context={`${f.division.sport.name} · ${f.division.name}${
+                        f.stage ? ` · ${f.stage.name}` : ""
+                      }`}
+                      when={fmt(f.scheduledAt)}
+                    />
                   ))}
                 </ul>
               </details>
