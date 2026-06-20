@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { db } from "@/lib/db";
 import { SportForm } from "@/components/admin/sport-form";
 import { ResultsEditor } from "@/components/admin/results-editor";
+import { PlayerStatsEditor } from "@/components/admin/player-stats-editor";
 import { updateSport, deleteSport } from "../actions";
 import {
   addDivision,
@@ -32,6 +33,7 @@ export default async function ManageSportPage({
           include: {
             participants: true,
             stages: { orderBy: { sortOrder: "asc" } },
+            playerStats: { orderBy: [{ goals: "desc" }, { assists: "desc" }] },
           },
         },
       },
@@ -229,6 +231,21 @@ export default async function ManageSportPage({
                       </button>
                     </form>
                   </div>
+
+                  {/* Player stats */}
+                  <details className="mt-5">
+                    <summary className="cursor-pointer text-xs uppercase tracking-wide text-muted hover:text-foreground">
+                      Player stats — scorers / assists
+                    </summary>
+                    <div className="mt-3">
+                      <PlayerStatsEditor
+                        divisionId={d.id}
+                        sportId={sport.id}
+                        groups={groups}
+                        stats={d.playerStats}
+                      />
+                    </div>
+                  </details>
                 </div>
               );
             })}
