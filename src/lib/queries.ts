@@ -36,6 +36,10 @@ export async function getSportBySlug(slug: string) {
         where: { isPublished: true },
         orderBy: { sortOrder: "asc" },
         include: {
+          playerStats: {
+            where: { isPublished: true },
+            include: { group: true },
+          },
           stages: {
             where: { isPublished: true },
             orderBy: { sortOrder: "asc" },

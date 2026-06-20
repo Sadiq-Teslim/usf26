@@ -5,6 +5,7 @@ import { StandingsTable } from "@/components/standings-table";
 import { FixtureList } from "@/components/fixture-list";
 import { SportHero } from "@/components/sport-hero";
 import { SportViews } from "@/components/sport-views";
+import { StatLeaderboard } from "@/components/stat-leaderboard";
 import { Reveal } from "@/components/motion/reveal";
 import { sharedOgImage, sharedTwitterImage } from "@/lib/site";
 import type { PresetKey } from "@/lib/standings";
@@ -105,11 +106,14 @@ export default async function SportPage({
   const anyTable = stagesData.some((s) => s.hasTable);
   const anyResults = stagesData.some((s) => s.results.length > 0);
   const anyUpcoming = stagesData.some((s) => s.upcoming.length > 0);
+  const playerStats = active?.playerStats ?? [];
+  const hasStats = playerStats.length > 0;
 
   const views = [
     anyTable && { key: "table", label: "Table" },
     anyResults && { key: "results", label: "Results" },
     anyUpcoming && { key: "fixtures", label: "Fixtures" },
+    hasStats && { key: "stats", label: "Scorers" },
   ].filter(Boolean) as { key: string; label: string }[];
 
   const view =
@@ -129,36 +133,59 @@ export default async function SportPage({
           views={views}
           activeView={view}
         >
-          <div className="flex flex-col gap-10">
-            {stagesData.map(({ stage, results, upcoming, hasTable }, i) => {
-              const items =
-                view === "results" ? results : view === "fixtures" ? upcoming : [];
-              const showStage = view === "table" ? hasTable : items.length > 0;
-              if (!showStage) return null;
-              return (
-                <Reveal key={stage.id} delay={i * 0.05}>
-                  <section className="flex flex-col gap-4">
-                    <div className="flex items-center gap-3">
-                      <span
-                        className="h-5 w-1.5 rounded-full"
-                        style={{ background: sport.colorHex }}
-                      />
-                      <h3 className="font-display text-2xl">{stage.name}</h3>
-                    </div>
-                    {view === "table" ? (
-                      <StandingsTable
-                        title={`${stage.name} table`}
-                        preset={preset}
-                        rows={stage.standings}
-                      />
-                    ) : (
-                      <FixtureList fixtures={items} />
-                    )}
-                  </section>
-                </Reveal>
-              );
-            })}
-          </div>
+          {view === "stats" ? (
+            <Reveal>
+              <div className="grid gap-4 lg:grid-cols-2">
+                <StatLeaderboard
+                  title="Top Goalscorers"
+                  stat="goals"
+                  rows={playerStats}
+                  accent={sport.colorHex}
+                />
+                <StatLeaderboard
+                  title="Top Assists"
+                  stat="assists"
+                  rows={playerStats}
+                  accent={sport.colorHex}
+                />
+              </div>
+            </Reveal>
+          ) : (
+            <div className="flex flex-col gap-10">
+              {stagesData.map(({ stage, results, upcoming, hasTable }, i) => {
+                const items =
+                  view === "results"
+                    ? results
+                    : view === "fixtures"
+                      ? upcoming
+                      : [];
+                const showStage = view === "table" ? hasTable : items.length > 0;
+                if (!showStage) return null;
+                return (
+                  <Reveal key={stage.id} delay={i * 0.05}>
+                    <section className="flex flex-col gap-4">
+                      <div className="flex items-center gap-3">
+                        <span
+                          className="h-5 w-1.5 rounded-full"
+                          style={{ background: sport.colorHex }}
+                        />
+                        <h3 className="font-display text-2xl">{stage.name}</h3>
+                      </div>
+                      {view === "table" ? (
+                        <StandingsTable
+                          title={`${stage.name} table`}
+                          preset={preset}
+                          rows={stage.standings}
+                        />
+                      ) : (
+                        <FixtureList fixtures={items} />
+                      )}
+                    </section>
+                  </Reveal>
+                );
+              })}
+            </div>
+          )}
         </SportViews>
       )}
     </div>
