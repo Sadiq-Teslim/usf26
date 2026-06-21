@@ -28,6 +28,17 @@ model Group {
   wonFixtures  Fixture[]          @relation("WinnerGroup")
   standings    Standing[]
   playerStats  PlayerStat[]
+  medalTally   MedalTally?
+}
+
+model MedalTally {
+  id        String   @id @default(cuid())
+  groupId   String   @unique
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  gold      Int      @default(0)
+  silver    Int      @default(0)
+  bronze    Int      @default(0)
+  updatedAt DateTime @updatedAt
 }
 
 /// A sport, e.g. Football. STANDARD sports have divisions/stages/fixtures/standings.

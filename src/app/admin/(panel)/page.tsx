@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { quickResult } from "./dashboard-actions";
 import { AddFixtureForm } from "@/components/admin/add-fixture-form";
 import { FixtureResultCard } from "@/components/admin/fixture-result-card";
+import { MedalEditor } from "@/components/admin/medal-editor";
 
 export const dynamic = "force-dynamic";
 
@@ -73,6 +74,11 @@ export default async function AdminDashboard() {
         },
       }),
     ]);
+
+  const [medalGroups, medalTallies] = await Promise.all([
+    db.group.findMany({ orderBy: { sortOrder: "asc" } }),
+    db.medalTally.findMany(),
+  ]);
 
   const divisionOptions = divisions
     .map((d) => ({
@@ -221,6 +227,35 @@ export default async function AdminDashboard() {
       <section className="flex flex-col gap-3">
         <h2 className="font-display text-lg">Add a fixture</h2>
         <AddFixtureForm divisions={divisionOptions} />
+      </section>
+
+      {/* Medal table editor */}
+      <section>
+        <details className="group rounded-2xl border border-border-brand bg-surface/40">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 [&::-webkit-details-marker]:hidden">
+            <h2 className="font-display text-lg">Medal table</h2>
+            <svg
+              className="text-muted transition-transform duration-300 group-open:rotate-180"
+              width="18"
+              height="18"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </summary>
+          <div className="border-t border-border-brand px-4 py-4">
+            <p className="mb-3 text-xs text-muted">
+              Enter golds / silvers / bronzes per team. Total (G×5 + S×3 + B×1)
+              and ranking update automatically on the landing page.
+            </p>
+            <MedalEditor groups={medalGroups} tallies={medalTallies} />
+          </div>
+        </details>
       </section>
 
       {/* Navigator — full access to every competition */}

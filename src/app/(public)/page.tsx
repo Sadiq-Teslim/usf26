@@ -1,7 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getPublishedSports } from "@/lib/queries";
+import { getPublishedSports, getMedalTable } from "@/lib/queries";
 import { SportCard } from "@/components/sport-card";
+import { MedalTable } from "@/components/medal-table";
 import { Sunburst } from "@/components/motion/sunburst";
 import { Marquee } from "@/components/motion/marquee";
 import { Reveal, StaggerGrid, StaggerItem } from "@/components/motion/reveal";
@@ -9,7 +10,10 @@ import { Reveal, StaggerGrid, StaggerItem } from "@/components/motion/reveal";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
-  const sports = await getPublishedSports();
+  const [sports, medals] = await Promise.all([
+    getPublishedSports(),
+    getMedalTable(),
+  ]);
 
   return (
     <div className="flex flex-col gap-14">
@@ -65,6 +69,13 @@ export default async function HomePage() {
           <Marquee text="ALL OR NOTHING" outline />
         </div>
       </section>
+
+      {/* Medal table */}
+      {medals.length > 0 && (
+        <Reveal>
+          <MedalTable rows={medals} />
+        </Reveal>
+      )}
 
       {/* Sports */}
       <section id="sports" className="scroll-mt-20">

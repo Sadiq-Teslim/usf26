@@ -23,6 +23,24 @@ export async function getPublishedSports() {
 
 export type PublicSport = Awaited<ReturnType<typeof getSportBySlug>>;
 
+/** Festival medal table: gold/silver/bronze per group + computed points total. */
+export async function getMedalTable() {
+  const rows = await db.medalTally.findMany({ include: { group: true } });
+  return rows
+    .map((r) => ({
+      ...r,
+      total: r.gold * 5 + r.silver * 3 + r.bronze,
+      medals: r.gold + r.silver + r.bronze,
+    }))
+    .sort(
+      (a, b) =>
+        b.total - a.total ||
+        b.medals - a.medals ||
+        b.gold - a.gold ||
+        b.silver - a.silver,
+    );
+}
+
 /** Full published detail for one sport (divisions → stages → standings + fixtures). */
 export async function getSportBySlug(slug: string) {
   const sport = await db.sport.findFirst({
