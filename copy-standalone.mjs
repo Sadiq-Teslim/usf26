@@ -22,9 +22,12 @@ if (existsSync("node_modules/.prisma")) {
 const entry = ".next/standalone/server.js";
 if (existsSync(entry)) {
   const shim =
+    // Container runtimes (Pxxl/Docker/K8s) set HOSTNAME to the container id, and
+    // Next's standalone server binds to it → unreachable. Force 0.0.0.0.
+    "process.env.HOSTNAME='0.0.0.0';" +
     "process.on('uncaughtException',e=>{console.error('[usf-fatal] uncaughtException:',(e&&e.stack)||e);process.exit(1);});" +
     "process.on('unhandledRejection',e=>{console.error('[usf-fatal] unhandledRejection:',(e&&e.stack)||e);});" +
-    "console.log('[usf-boot] starting on node '+process.version+' PORT='+(process.env.PORT||'')+' HOSTNAME='+(process.env.HOSTNAME||''));\n";
+    "console.log('[usf-boot] node '+process.version+' binding 0.0.0.0:'+(process.env.PORT||3000));\n";
   writeFileSync(entry, shim + readFileSync(entry, "utf8"));
 }
 
