@@ -10,9 +10,11 @@ import { Reveal, StaggerGrid, StaggerItem } from "@/components/motion/reveal";
 export const dynamic = "force-dynamic";
 
 export default async function HomePage() {
+  // Resilient: a transient DB hiccup renders an empty page (200), not a 500 —
+  // so deploy health-checks never fail on a cold database. Auto-refresh fills in.
   const [sports, medals] = await Promise.all([
-    getPublishedSports(),
-    getMedalTable(),
+    getPublishedSports().catch(() => []),
+    getMedalTable().catch(() => []),
   ]);
 
   return (
