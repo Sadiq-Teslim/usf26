@@ -109,6 +109,14 @@ export function PredictionCard({
               maxLength={40}
               className="w-full rounded-lg border border-border-brand bg-indigo-deep px-3 py-2.5 text-sm focus:border-white/40 focus:outline-none"
             />
+            <a
+              href="https://url.spade.ng/k"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-1.5 inline-block text-[11px] font-semibold text-brand-magenta hover:underline"
+            >
+              No Spade account? Create one →
+            </a>
           </div>
           <button
             disabled={pending}
