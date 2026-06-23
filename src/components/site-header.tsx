@@ -45,6 +45,12 @@ export function SiteHeader() {
             >
               Schedule
             </Link>
+            <Link
+              href="/predict"
+              className="rounded-full bg-brand-yellow/15 px-4 py-1.5 text-brand-yellow transition hover:bg-brand-yellow/25"
+            >
+              Predict
+            </Link>
           </nav>
         </div>
       </div>
