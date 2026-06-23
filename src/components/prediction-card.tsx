@@ -95,6 +95,21 @@ export function PredictionCard({
             maxLength={40}
             className="w-full rounded-xl border border-border-brand bg-indigo-deep px-3 py-2.5 text-sm focus:border-white/40 focus:outline-none"
           />
+          <div className="rounded-xl border border-brand-magenta/40 bg-brand-magenta/5 p-2.5">
+            <label className="mb-1.5 flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wide text-brand-magenta">
+              <span aria-hidden>♠</span> Spade username
+              <span className="ml-auto font-normal normal-case text-muted">
+                required
+              </span>
+            </label>
+            <input
+              name="spadeUsername"
+              placeholder="@your_spade_username"
+              required
+              maxLength={40}
+              className="w-full rounded-lg border border-border-brand bg-indigo-deep px-3 py-2.5 text-sm focus:border-white/40 focus:outline-none"
+            />
+          </div>
           <button
             disabled={pending}
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-yellow px-4 py-2.5 text-sm font-bold text-indigo-deep transition hover:brightness-110 disabled:opacity-60"

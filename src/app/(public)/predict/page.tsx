@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import { Toaster } from "sonner";
 import { db } from "@/lib/db";
 import { PredictionCard, type Agg } from "@/components/prediction-card";
@@ -76,6 +77,18 @@ export default async function PredictPage() {
             Call the scorelines for the finals &amp; 3rd-place playoffs. One pick
             per match — then see how the crowd voted. Locks at kickoff.
           </p>
+          <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 shadow-md">
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-indigo-deep">
+              Powered by
+            </span>
+            <Image
+              src="/sponsors/spade-full-logo.png"
+              alt="Spade"
+              width={120}
+              height={28}
+              className="h-4 w-auto"
+            />
+          </div>
         </div>
       </section>
 

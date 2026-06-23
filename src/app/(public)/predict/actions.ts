@@ -14,9 +14,11 @@ export async function getDeviceToken(): Promise<string | undefined> {
 
 export async function submitPrediction(fixtureId: string, formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
+  const spade = String(formData.get("spadeUsername") ?? "").trim();
   const hs = parseInt(String(formData.get("homeScore") ?? ""), 10);
   const as = parseInt(String(formData.get("awayScore") ?? ""), 10);
   if (!name || name.length > 40) throw new Error("Enter your name");
+  if (!spade || spade.length > 40) throw new Error("Enter your Spade username");
   if (!Number.isFinite(hs) || !Number.isFinite(as) || hs < 0 || as < 0 || hs > 50 || as > 50)
     throw new Error("Enter a valid score");
 
@@ -38,8 +40,15 @@ export async function submitPrediction(fixtureId: string, formData: FormData) {
 
   await db.prediction.upsert({
     where: { fixtureId_deviceToken: { fixtureId, deviceToken: token } },
-    update: { name, homeScore: hs, awayScore: as },
-    create: { fixtureId, deviceToken: token, name, homeScore: hs, awayScore: as },
+    update: { name, spadeUsername: spade, homeScore: hs, awayScore: as },
+    create: {
+      fixtureId,
+      deviceToken: token,
+      name,
+      spadeUsername: spade,
+      homeScore: hs,
+      awayScore: as,
+    },
   });
   revalidatePath("/predict");
 }

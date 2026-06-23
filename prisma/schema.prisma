@@ -160,11 +160,12 @@ model Prediction {
   id          String   @id @default(cuid())
   fixtureId   String
   fixture     Fixture  @relation(fields: [fixtureId], references: [id], onDelete: Cascade)
-  name        String
-  homeScore   Int
-  awayScore   Int
-  deviceToken String
-  createdAt   DateTime @default(now())
+  name          String
+  spadeUsername String   @default("")
+  homeScore     Int
+  awayScore     Int
+  deviceToken   String
+  createdAt     DateTime @default(now())
 
   @@unique([fixtureId, deviceToken])
 }
