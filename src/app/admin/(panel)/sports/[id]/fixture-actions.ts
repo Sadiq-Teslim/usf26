@@ -57,6 +57,8 @@ export async function updateFixture(
       awayScore: num(formData.get("awayScore")),
       homePoints: num(formData.get("homePoints")),
       awayPoints: num(formData.get("awayPoints")),
+      homePens: num(formData.get("homePens")),
+      awayPens: num(formData.get("awayPens")),
       status: String(formData.get("status") ?? "SCHEDULED"),
       venue: String(formData.get("venue") ?? "").trim() || null,
       isPublished: formData.get("isPublished") === "on",

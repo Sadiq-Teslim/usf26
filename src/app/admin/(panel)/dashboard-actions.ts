@@ -20,6 +20,8 @@ export async function quickResult(fixtureId: string, formData: FormData) {
       awayScore: num(formData.get("awayScore")),
       homePoints: num(formData.get("homePoints")),
       awayPoints: num(formData.get("awayPoints")),
+      homePens: num(formData.get("homePens")),
+      awayPens: num(formData.get("awayPens")),
       status: String(formData.get("status") ?? "FINISHED"),
       resultPublished: formData.get("resultPublished") === "on",
     },

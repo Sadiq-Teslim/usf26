@@ -144,6 +144,8 @@ model Fixture {
   awayScore       Int?
   homePoints      Int? // SETS sports: total points scored (for Diff)
   awayPoints      Int?
+  homePens        Int? // penalty shootout score (knockouts)
+  awayPens        Int?
   winnerGroupId   String?
   winnerGroup     Group?    @relation("WinnerGroup", fields: [winnerGroupId], references: [id])
   isPublished     Boolean   @default(false)

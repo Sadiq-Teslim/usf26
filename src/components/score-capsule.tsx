@@ -15,6 +15,8 @@ export type CapsuleFixture = {
   venue: string | null;
   homeScore: number | null;
   awayScore: number | null;
+  homePens: number | null;
+  awayPens: number | null;
   resultPublished: boolean;
   homeGroup: Group;
   awayGroup: Group;
@@ -34,8 +36,12 @@ function fmt(d: Date | null) {
 export function ScoreCapsule({ fixture: f }: { fixture: CapsuleFixture }) {
   const showScore = f.resultPublished && f.homeScore != null;
   const live = f.status === "LIVE";
-  const homeWin = showScore && (f.homeScore ?? 0) > (f.awayScore ?? 0);
-  const awayWin = showScore && (f.awayScore ?? 0) > (f.homeScore ?? 0);
+  const hasPens =
+    showScore && f.homePens != null && f.awayPens != null;
+  const decideHome = hasPens && f.homeScore === f.awayScore ? f.homePens : f.homeScore;
+  const decideAway = hasPens && f.homeScore === f.awayScore ? f.awayPens : f.awayScore;
+  const homeWin = showScore && (decideHome ?? 0) > (decideAway ?? 0);
+  const awayWin = showScore && (decideAway ?? 0) > (decideHome ?? 0);
 
   return (
     <div className="group relative overflow-hidden rounded-2xl border border-border-brand bg-surface/70 backdrop-blur transition-transform duration-300 hover:-translate-y-0.5">
@@ -103,6 +109,11 @@ export function ScoreCapsule({ fixture: f }: { fixture: CapsuleFixture }) {
             )}
             {f.status === "FINISHED" ? "FT" : f.status.toLowerCase()}
           </span>
+          {hasPens && (
+            <span className="mt-0.5 text-[10px] font-semibold text-brand-yellow">
+              Pens {f.homePens}–{f.awayPens}
+            </span>
+          )}
         </div>
 
         {/* away */}

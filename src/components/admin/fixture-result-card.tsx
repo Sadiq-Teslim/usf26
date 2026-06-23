@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, type ReactNode } from "react";
+import { useState, useTransition, type ReactNode } from "react";
 import { toast } from "sonner";
 import { Crest } from "@/components/crest";
 
@@ -14,6 +14,8 @@ export type ResultFixture = {
   awayScore: number | null;
   homePoints: number | null;
   awayPoints: number | null;
+  homePens: number | null;
+  awayPens: number | null;
   isPublished: boolean;
   resultPublished: boolean;
   homeGroup: Group;
@@ -41,7 +43,10 @@ export function FixtureResultCard({
   footer?: ReactNode;
 }) {
   const [pending, startTransition] = useTransition();
+  const [hs, setHs] = useState(f.homeScore?.toString() ?? "");
+  const [as, setAs] = useState(f.awayScore?.toString() ?? "");
   const live = f.status === "LIVE";
+  const levelDraw = hs !== "" && as !== "" && hs === as;
 
   function onSubmit(formData: FormData) {
     startTransition(async () => {
@@ -93,7 +98,8 @@ export function FixtureResultCard({
               name="homeScore"
               type="number"
               inputMode="numeric"
-              defaultValue={f.homeScore ?? ""}
+              value={hs}
+              onChange={(e) => setHs(e.target.value)}
               className={`${inp} w-12 text-center`}
               aria-label="home score"
             />
@@ -102,7 +108,8 @@ export function FixtureResultCard({
               name="awayScore"
               type="number"
               inputMode="numeric"
-              defaultValue={f.awayScore ?? ""}
+              value={as}
+              onChange={(e) => setAs(e.target.value)}
               className={`${inp} w-12 text-center`}
               aria-label="away score"
             />
@@ -139,6 +146,29 @@ export function FixtureResultCard({
               defaultValue={f.awayPoints ?? ""}
               className={`${inp} w-14 text-center`}
               aria-label="away points"
+            />
+          </div>
+        )}
+
+        {/* Penalty shootout (knockouts) — appears when the score is level */}
+        {levelDraw && (
+          <div className="flex items-center justify-center gap-2 text-[11px] text-brand-yellow">
+            <span>penalties</span>
+            <input
+              name="homePens"
+              type="number"
+              inputMode="numeric"
+              defaultValue={f.homePens ?? ""}
+              className={`${inp} w-12 text-center`}
+              aria-label="home pens"
+            />
+            <input
+              name="awayPens"
+              type="number"
+              inputMode="numeric"
+              defaultValue={f.awayPens ?? ""}
+              className={`${inp} w-12 text-center`}
+              aria-label="away pens"
             />
           </div>
         )}
