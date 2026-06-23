@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build && node copy-standalone.mjs",
+    "build": "prisma generate && next build && node copy-standalone.mjs && node smoke-test.mjs",
     "start": "node .next/standalone/server.js",
     "lint": "eslint",
     "db:seed": "prisma db seed",
