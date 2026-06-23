@@ -13,6 +13,9 @@
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
+  "engines": {
+    "node": "22.x"
+  },
   "dependencies": {
     "@prisma/client": "^6.19.3",
     "motion": "^12.40.0",
