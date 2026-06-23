@@ -1,16 +1,30 @@
 import type { NextConfig } from "next";
 
+const onVercel = !!process.env.VERCEL;
+
 const nextConfig: NextConfig = {
   // Pin the workspace root to this project (multiple lockfiles exist higher up).
   turbopack: {
     root: __dirname,
   },
-  // Self-contained production server (node server.js) — avoids the `next start`
-  // CLI, which Pxxl's Node 26 runtime kills at launch.
-  output: "standalone",
-  // Pxxl skips native install scripts, so sharp has no binary. Skip the
-  // image optimizer (serve originals) instead of crashing on a missing sharp.
-  images: { unoptimized: true },
+  // Self-contained production server (node server.js) for non-Vercel hosts (Pxxl).
+  // On Vercel, let its native adapter handle output.
+  output: onVercel ? undefined : "standalone",
+  // Vercel has sharp; other hosts (Pxxl) skip its native install, so disable the
+  // optimizer off-Vercel to avoid a missing-sharp crash.
+  images: { unoptimized: !onVercel },
+  async rewrites() {
+    // On Vercel this deploy is prediction-focused: serve /predict at the root,
+    // so the shared link has no /predict suffix. (No effect on other hosts.)
+    // `beforeFiles` is required to override the existing "/" homepage route.
+    return {
+      beforeFiles: onVercel
+        ? [{ source: "/", destination: "/predict" }]
+        : [],
+      afterFiles: [],
+      fallback: [],
+    };
+  },
 };
 
 export default nextConfig;
